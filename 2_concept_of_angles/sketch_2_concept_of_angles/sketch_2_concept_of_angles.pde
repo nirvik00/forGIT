@@ -7,7 +7,8 @@ void setup(){
   fill(255,0,0); text("Press 'e' to draw the angles", 10,400 );
 }
 void draw(){  
-  
+  float r=radians(180);
+  println(r);
 }
 
 void keyPressed(){
