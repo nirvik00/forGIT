@@ -62,21 +62,30 @@ Pt moveRi(Pt p){
 }
 
 boolean checkGlobalDist(Pt r){
-  Pt v=new Pt(I.x-r.x, I.y-r.y);
-  float d=sqrt(v.x*v.x + v.y*v.y);
-  if(d<width) return true;
+  int sum=0;
+  for(int i=0; i<attrLi.size(); i++){
+    Pt p=attrLi.get(i);
+    // Pt v=new Pt(p.x-r.x, p.y-r.y);
+    // float d=sqrt(v.x*v.x + v.y*v.y);
+    float d= sqrt(p.x*p.x+p.y*p.y);
+    if(d<MaxDi){
+      sum++;
+      break;
+    }
+  }
+  if(sum==0) return true;
   return false;
 }
 
 void addSegPt(Pt p, Pt r){
   int sum=0;
-  boolean t=checkGlobalDist(r);
+  boolean t=true; checkGlobalDist(r);
   if(t==true){
     for(int i=0; i<ptLi.size(); i++){
       Pt q=ptLi.get(i);
       Pt u=new Pt(r.x-q.x, r.y-q.y);
       float d=sqrt(u.x*u.x + u.y*u.y);
-      if(d<R/2){
+      if(d<R){
         sum++;
         break;
       }
