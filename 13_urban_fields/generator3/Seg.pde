@@ -20,7 +20,7 @@ class Seg{
     }else{
       stroke(255,0,0,150);
     }
-    strokeWeight(10);
+    strokeWeight(2);
     line(p.x,p.y,q.x,q.y);
   }
 }

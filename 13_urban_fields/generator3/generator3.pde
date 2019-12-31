@@ -1,83 +1,78 @@
 Pt I;
-float R=50;
-float A=0;
-float MaxDi;
-float randomAng=0; // PI/45;
 
-ArrayList<Seg> segLi;
-ArrayList<Pt> ptLi;
-ArrayList<Pt> attrLi;
-
-int MaxNum=5;
+float R=15;
 
 void setup(){
-  size(1000,700);
-  MaxDi=width/2;
-  segLi=new ArrayList<Seg>();
-  ptLi=new ArrayList<Pt>();
-  attrLi=new ArrayList<Pt>();
-  
-  I=new Pt(width/2, height/2);
-  // ptLi.add(I);
-  
-  init();
-}
-
-void init(){
-  // add attractor points
-  for(int i=0; i<MaxNum; i++){
-    Pt a=new Pt(random(width/2)+250, random(height/2)+150);
-    attrLi.add(a);
-  }
-  
-  // add initial segments from I
-  for(int i=0; i<attrLi.size(); i++){
-    Pt p=attrLi.get(i);
-    ptLi.add(p);
-    moveUp(p);
-    moveDn(p);
-    moveLe(p);
-    moveRi(p);
-  }
+  size(1000,700); 
+  I=new Pt(width/2, height/2+100);
 }
 
 void draw(){
   background(255);
-  // I.display();
-  for(int i=0; i<segLi.size(); i++){
-    segLi.get(i).display();
+  stroke(0);
+  strokeWeight(1);
+  int a=50;
+  int b=50;
+  ArrayList<ArrayList<Pt>> rowPtLi=new ArrayList<ArrayList<Pt>>();
+  for(int i=a; i<width-a; i+=a){
+    ArrayList<Pt> rowLi=new ArrayList<Pt>();
+    for(int j=b; j<height-b; j+=b){
+      Pt p=new Pt(i,j);
+      
+      Pt u=new Pt(I.x-p.x, I.y-p.y);
+      float d=sqrt(u.x*u.x+u.y*u.y);
+      Pt q=generateSeg(p); 
+      //p.display();
+      //q.display2();
+      rowLi.add(q);
+    }
+    rowPtLi.add(rowLi);
   }
-  for(int i=0; i<ptLi.size(); i++){
-    ptLi.get(i).display();
-  }
-  for(int i=0; i<attrLi.size(); i++){
-    attrLi.get(i).display2();
-  }
-  
-  fill(0);
-  text("Press r or R to reset", 10,10);
-  text("Press (multiple) e or E to generate", 10,30);
-  noFill();
+  I.display2();
+  generateQuads(rowPtLi);
 }
 
-void runProgPt(){
-  int i=(int) random(ptLi.size());
-  Pt p=ptLi.get(i);
-  move(p);
-  println(ptLi.size(), segLi.size());
-}
-
-void keyPressed(){
-  if(key=='e' || key=='E'){
-    R=50;
-    for(int i=0; i<100; i++){
-      runProgPt();
+void generateQuads(ArrayList<ArrayList<Pt>>pts){
+  for(int i=0; i<pts.size()-1; i++){
+    ArrayList<Pt> ptsRow1=pts.get(i);
+    ArrayList<Pt> ptsRow2=pts.get(i+1);
+    for(int j=0; j<ptsRow1.size()-1; j++){
+      Pt p=ptsRow1.get(j);
+      Pt q=ptsRow1.get(j+1);
+      Pt r=ptsRow2.get(j+1);
+      Pt s=ptsRow2.get(j);
+      stroke(0,200,0,50);
+      strokeWeight(5);
+      
+      line(p.x,p.y,q.x,q.y);
+      line(q.x,q.y,r.x,r.y);
+      line(r.x,r.y,s.x,s.y);
+      line(s.x,s.y,p.x,p.y);
+      
     }
   }
-  if(key=='r' || key=='R'){
-    ptLi.clear();
-    segLi.clear();
-    attrLi.clear();
-    init();
+}
+
+Pt generateSeg(Pt p){
+  Pt q=new Pt(p.x+R, p.y);
+  Pt u=new Pt(I.x-p.x, I.y-p.y);
+  Pt v=new Pt(q.x-p.x, q.y-p.y);
+  float normU=sqrt(u.x*u.x + u.y*u.y);
+  float normV=sqrt(v.x*v.x + v.y*v.y);
+  float dotProd=u.x*v.x + u.y*v.y;
+  float ang=acos(dotProd/(normU*normV));
+  if(p.y>I.y){
+    ang=2*PI-ang;
   }
+  float x=v.x*cos(ang) - v.y*sin(ang);
+  float y=v.x*sin(ang) + v.y*cos(ang);
+  Pt P=new Pt(p.x+x, p.y+y);
+  // line(p.x,p.y,q.x,q.y);
+  // line(p.x,p.y,P.x,P.y);
+  return P;
+}
+
+void mousePressed(){
+  Pt m=new Pt(mouseX, mouseY);
+  I=new Pt(m.x,m.y);
 }
